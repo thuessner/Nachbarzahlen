@@ -8,8 +8,29 @@
 :root{--ink:#1d3557;--sun:#ffc933;--dog:#e8903a;--frog:#43a047;--ok:#2e7d32;--okbg:#d6f0d0;--bad:#c62828;--badbg:#fbe0dc;--z:#e8760c;--zb:#fde3c7;--h:#1b3a8c;--hb:#d5def7;color-scheme:light}
 *{box-sizing:border-box}
 html{font-size:16px}
-body{margin:0;background:linear-gradient(160deg,#cfeaff 0%,#e9f6ff 40%,#eef9e2 100%) fixed;min-height:100vh;color:var(--ink);font-family:"Avenir Next","Trebuchet MS",ui-rounded,system-ui,sans-serif;font-size:1.3rem;line-height:1.45;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);-webkit-text-size-adjust:100%;touch-action:manipulation}
-main{max-width:75rem;margin:0 auto;padding:1.1rem 1.5rem 3rem}
+html,body{height:100%}
+body{margin:0;background:linear-gradient(160deg,#cfeaff 0%,#e9f6ff 40%,#eef9e2 100%) fixed;height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden;color:var(--ink);font-family:"Avenir Next","Trebuchet MS",ui-rounded,system-ui,sans-serif;font-size:1.3rem;line-height:1.45;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);-webkit-text-size-adjust:100%;touch-action:manipulation}
+main{max-width:75rem;width:100%;margin:0 auto;padding:.7rem 1.3rem .8rem;flex:1;min-height:0;display:flex;flex-direction:column;overflow-y:auto}
+#play:not([hidden]){display:flex;flex-direction:column;flex:1;min-height:0}
+.playing header{padding:.3rem 1rem;margin-bottom:.5rem;border-radius:1.2rem}
+.playing header p{display:none}
+.playing h1{font-size:1.5rem}
+.playing .bd{width:2.8rem;height:2.8rem}
+#play .tools{margin-bottom:.3rem}
+#play .leg{margin:0;flex-wrap:nowrap}
+#play .leg .chip{font-size:.8rem;padding:.15rem .5rem}
+#play .tools{gap:.4rem;flex-wrap:nowrap;align-items:center}
+#play .tools .btn,#play .tools .sw{font-size:.95rem;padding:.3rem .7rem;min-height:2.6rem;white-space:nowrap}
+#play .tools .leaves{display:none}
+#play .leg .chip{font-size:.72rem}
+#play .task{font-size:1.35rem;margin:.1rem 0 .4rem}
+#play .say{margin:.2rem 0 .5rem}
+#play .pf{width:3.6rem}#play .pf svg{width:3.6rem}
+#play .fb{min-height:3rem;padding:.4rem 1rem;font-size:1.2rem}
+#play .row{margin-bottom:0}
+#play .btn{min-height:3.2rem}
+#play .ans{margin-bottom:.5rem}
+#end{overflow:auto}
 [hidden]{display:none!important}
 button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 header{display:flex;align-items:center;gap:1.2rem;margin-bottom:1.1rem;background:rgba(255,255,255,.75);-webkit-backdrop-filter:blur(.4rem);backdrop-filter:blur(.4rem);border-radius:1.8rem;padding:.8rem 1.4rem;box-shadow:0 .5rem 1.6rem rgba(29,53,87,.14)}
@@ -49,8 +70,8 @@ header p{margin:.15rem 0 0;font-size:1.15rem}
 .leaf.done{background:#b9c6d6;border-color:var(--ink)}
 .leaf.star{background:var(--frog)}
 .task{font-size:1.5rem;margin:.3rem 0 .6rem}
-.card{background:#fff;border-radius:1.6rem;padding:.7rem .9rem .3rem;margin-bottom:.9rem;box-shadow:0 .4rem 1.1rem rgba(29,53,87,.13)}
-.card svg{width:100%;height:auto;display:block}
+.card{position:relative;flex:1 1 0;min-height:7rem;background:#fff;border-radius:1.6rem;margin-bottom:.6rem;box-shadow:0 .4rem 1.1rem rgba(29,53,87,.13)}
+.card svg{position:absolute;left:.6rem;top:.4rem;width:calc(100% - 1.2rem);height:calc(100% - .8rem);display:block}
 .ans{display:flex;gap:1rem;align-items:flex-end;justify-content:center;flex-wrap:wrap;margin-bottom:1rem}
 .ans .col{display:flex;flex-direction:column;gap:.3rem;align-items:center}
 .ans label{font-weight:800;font-size:1.1rem;padding:.05rem .8rem;border-radius:1rem;border:2px solid}
@@ -82,6 +103,10 @@ header p{margin:.15rem 0 0;font-size:1.15rem}
 #end .badges{justify-content:center;margin-bottom:.6rem}
 .big{font-size:4.4rem;line-height:1;color:var(--sun);margin:.6rem 0;-webkit-text-stroke:2px var(--ink)}
 @media (max-width:700px){h1{font-size:1.5rem}.bd{width:3.6rem;height:3.6rem}.num{width:9rem}}
+.num.sm{width:9.5rem;font-size:1.4rem;height:3rem}
+.dl{font-weight:700;font-size:1rem;color:#4a5d7a}
+.jp{display:flex;align-items:center;gap:.4rem;font-size:1.8rem;font-weight:800;margin-bottom:.4rem}
+.ans .col.d{gap:.15rem}
 </style>
 </head>
 <body>
@@ -104,6 +129,7 @@ header p{margin:.15rem 0 0;font-size:1.15rem}
   <div class="modes">
     <button class="mode" data-g="one"><i>📏</i><div><b>Eine Zahl am Zahlenstrahl</b><span>Finde die beiden Nachbarn.</span></div></button>
     <button class="mode" data-g="tab"><i>📋</i><div><b>Tabelle mit mehreren Zahlen</b><span>Trage die Nachbarn in die Tabelle ein.</span></div></button>
+    <button class="mode" data-g="exp"><i>🏆</i><div><b>Experte</b><span>Nachbarn finden, vor und zurück rechnen.</span></div></button>
   </div>
 </section>
 
@@ -111,9 +137,9 @@ header p{margin:.15rem 0 0;font-size:1.15rem}
   <div class="tools">
     <button class="btn" id="back">‹ Einstellungen</button>
     <div class="leaves" id="dots" aria-hidden="true"></div>
-    <label class="sw"><input type="checkbox" id="ex2"> Erklärmodus</label>
+    <div class="leg"><span class="chip z">NZT = Nachbarzehntausender</span><span class="chip h">NHT = Nachbarhunderttausender</span></div>
+    <label class="sw"><input type="checkbox" id="ex2"> Erklärmodus</label><label class="sw"><input type="checkbox" id="di2"> Rechne vor und zurück</label>
   </div>
-  <div class="leg"><span class="chip z">NZT = Nachbarzehntausender</span><span class="chip h">NHT = Nachbarhunderttausender</span></div>
   <p class="task" id="q"></p>
   <div class="card" id="nl"></div>
   <div id="ans"></div>
@@ -155,21 +181,21 @@ const icon=k=>`<svg viewBox="-40 -42 80 80" aria-hidden="true">${shape(k)}</svg>
 $("b1").innerHTML=$("b3").innerHTML=icon("dog");$("b2").innerHTML=$("b4").innerHTML=icon("frog");
 
 /* ---------- Zahlen und Aufgaben ---------- */
-let cfg={kind:"Z",explain:true},st={};
+let cfg={kind:"Z",explain:true,dist:false},st={};
 const nb=n=>({h0:Math.floor(n/100000)*100000,h1:Math.floor(n/100000)*100000+100000,z0:Math.floor(n/10000)*10000,z1:Math.floor(n/10000)*10000+10000});
-function numFor(lvl){ // Zahl liegt deutlich zwischen zwei Strichen
-  for(;;){const n=rnd(10060,99940)*10;
-    if(lvl==="Z"){const r=n%10000;if(r>=1200&&r<=8800)return n}
-    else{const r=n%100000;if(r>=10000&&r<=90000)return n}}
+function numFor(lvl){ // Nachbarn und Zahl; Zahl liegt weit genug von beiden Nachbarn weg
+  const st_=lvl==="Z"?10000:100000,lo=lvl==="Z"?rnd(10,99)*10000:rnd(1,9)*100000,r=rnd(st_/400,st_*3/400)*100;
+  return {lo:lo,hi:lo+st_,n:lo+r};
 }
 function newTask(){
   const pet=one([{k:"dog",n:"Max"},{k:"frog",n:"Mini"}]);
-  if(st.game==="one"){
-    const lvl=cfg.kind==="M"?one(["Z","H"]):cfg.kind,n=numFor(lvl),x=nb(n);
-    return lvl==="Z"?{type:"one",lvl:"Z",n:n,pet:pet,a:x.h0,b:x.h1,lo:x.z0,hi:x.z1}:{type:"one",lvl:"H",n:n,pet:pet,a:0,b:1000000,lo:x.h0,hi:x.h1};
+  if(st.game!=="tab"){
+    const lvl=cfg.kind==="M"?one(["Z","H"]):cfg.kind,x=numFor(lvl);
+    const a=lvl==="Z"?Math.floor(x.lo/100000)*100000:0;
+    return {type:"one",lvl:lvl,n:x.n,pet:pet,lo:x.lo,hi:x.hi,a:a,b:lvl==="Z"?a+100000:1000000};
   }
   const W0=rnd(1,7)*100000,nums=[];
-  for(let i=0;i<3;i++){const n=W0+i*100000+rnd(1,8)*10000+rnd(120,880)*10;nums.push(Object.assign({n:n},nb(n)))}
+  for(let i=0;i<3;i++){const n=W0+i*100000+rnd(1,8)*10000+rnd(12,88)*100;nums.push(Object.assign({n:n},nb(n)))}
   return {type:"tab",cols:cfg.kind,a:W0,b:W0+300000,nums:nums,pet:pet};
 }
 
@@ -177,17 +203,21 @@ function newTask(){
 const COLZ="#e8760c",COLH="#1b3a8c",PCOL=["#e8903a","#43a047","#6a4fd1"];
 function axis(Y){return `<line x1="24" y1="${Y}" x2="972" y2="${Y}" stroke="#1d3557" stroke-width="5" stroke-linecap="round"/><path d="M958 ${Y-13} L982 ${Y} L958 ${Y+13}" fill="none" stroke="#1d3557" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`}
 function svgOne(t,ex){
-  const a=t.a,b=t.b,step=t.lvl==="Z"?10000:100000,N=(b-a)/step,Y=150,X=v=>90+820*(v-a)/(b-a),col=t.lvl==="Z"?COLZ:COLH,tag=t.lvl==="Z"?"NZT":"NHT";
-  let s=`<svg viewBox="0 0 1000 300" role="img" aria-label="Zahlenstrahl"><rect x="0" y="178" width="1000" height="122" rx="18" fill="#d9f0c7"/>`+axis(Y);
-  if(ex)s+=`<line x1="${X(t.lo)}" y1="${Y}" x2="${X(t.hi)}" y2="${Y}" stroke="${col}" stroke-width="12" stroke-linecap="round" opacity=".55"/>`;
+  const a=t.a,b=t.b,step=t.lvl==="Z"?10000:100000,N=(b-a)/step,Y=170,X=v=>110+780*(v-a)/(b-a),col=t.lvl==="Z"?COLZ:COLH,tag=t.lvl==="Z"?"NZT":"NHT",xn=X(t.n),xl=X(t.lo),xh=X(t.hi);
+  let s=`<svg viewBox="0 0 1000 330" role="img" aria-label="Zahlenstrahl"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5d6f8a"/></marker></defs><rect x="0" y="${Y+28}" width="1000" height="${330-Y-28}" rx="18" fill="#d9f0c7"/>`+axis(Y);
+  if(ex)s+=`<line x1="${xl}" y1="${Y}" x2="${xh}" y2="${Y}" stroke="${col}" stroke-width="12" stroke-linecap="round" opacity=".55"/>`;
   for(let i=0;i<=N;i++){const h=i===0||i===N?34:i===N/2?26:16;
     s+=`<line class="tk" x1="${X(a+i*step)}" x2="${X(a+i*step)}" y1="${Y-h}" y2="${Y+h}" stroke="#1d3557" stroke-width="${h>20?6:4}" stroke-linecap="round"/>`}
   const lab=(v,y,c,tg)=>`<text x="${X(v)}" y="${y}" text-anchor="middle" font-size="23" font-weight="700" fill="${c}">${f(v)}</text>`+(tg?`<text x="${X(v)}" y="${y+25}" text-anchor="middle" font-size="20" font-weight="800" fill="${c}">${tg}</text>`:"");
-  if(ex){ // nur die beiden Nachbarn, auf zwei Höhen, damit nichts übereinander liegt
-    s+=lab(t.lo,208,col,tag)+`<line x1="${X(t.hi)}" x2="${X(t.hi)}" y1="${Y+18}" y2="244" stroke="${col}" stroke-width="3" stroke-dasharray="5 5"/>`+lab(t.hi,268,col,tag);
-  }else(t.lvl==="Z"?[a,b]:[0,500000,1000000]).forEach(v=>{s+=lab(v,208,"#1d3557","")});
-  if(ex)[t.lo,t.hi].forEach(v=>{s+=`<circle cx="${X(v)}" cy="${Y}" r="12" fill="${col}" stroke="#fff" stroke-width="3"/>`});
-  s+=`<g id="pet" transform="translate(${X(t.n)} 0)"><line x1="0" x2="0" y1="100" y2="172" stroke="#1d3557" stroke-width="3.5" stroke-dasharray="7 6" opacity=".6"/><g transform="translate(0 68)">${shape(t.pet.k)}</g><circle cx="0" cy="${Y}" r="9" fill="${t.pet.k==="dog"?"#e8903a":"#43a047"}" stroke="#fff" stroke-width="3"/><rect x="-62" y="2" width="124" height="30" rx="15" fill="#fff" stroke="#1d3557" stroke-width="2.5"/><text y="24" text-anchor="middle" font-size="21" font-weight="800" fill="#1d3557">${f(t.n)}</text></g>`;
+  if(ex){
+    s+=lab(t.lo,Y+58,col,tag)+`<line x1="${xh}" x2="${xh}" y1="${Y+18}" y2="${Y+94}" stroke="${col}" stroke-width="3" stroke-dasharray="5 5"/>`+lab(t.hi,Y+118,col,tag);
+    [t.lo,t.hi].forEach(v=>{s+=`<circle cx="${X(v)}" cy="${Y}" r="12" fill="${col}" stroke="#fff" stroke-width="3"/>`});
+  }else(t.lvl==="Z"?[a,b]:[0,500000,1000000]).forEach(v=>{s+=lab(v,Y+58,"#1d3557","")});
+  if(st.dist){ // Sprünge zurück und vor, Zahlen stehen über den Nachbarn
+    const jump=(to,txt,anchor,tx)=>`<path d="M${xn} ${Y-8} Q${(xn+to)/2} ${Y-95} ${to} ${Y-14}" fill="none" stroke="#5d6f8a" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ar)"/><text x="${tx}" y="${Y-62}" text-anchor="${anchor}" font-size="22" font-weight="800" fill="#1d3557">${txt}</text>`;
+    s+=jump(xl,"− "+(ex?f(t.n-t.lo):"?"),"end",xl+10)+jump(xh,"+ "+(ex?f(t.hi-t.n):"?"),"start",xh-10);
+  }
+  s+=`<g id="pet"><line x1="${xn}" x2="${xn}" y1="82" y2="${Y-22}" stroke="#1d3557" stroke-width="3" stroke-dasharray="6 6" opacity=".6"/><g transform="translate(${xn} 52) scale(.8)">${shape(t.pet.k)}</g><circle cx="${xn}" cy="${Y}" r="9" fill="${t.pet.k==="dog"?"#e8903a":"#43a047"}" stroke="#fff" stroke-width="3"/><rect x="${xn-62}" y="0" width="124" height="28" rx="14" fill="#fff" stroke="#1d3557" stroke-width="2.5"/><text x="${xn}" y="21" text-anchor="middle" font-size="20" font-weight="800" fill="#1d3557">${f(t.n)}</text></g>`;
   return s+"</svg>";
 }
 function svgTab(t,ex){
@@ -212,11 +242,11 @@ const N_ONE=8,N_TAB=3;
 function leaves(){$("dots").innerHTML=st.ex?"":Array.from({length:st.n},(_,k)=>`<span class="leaf ${k<st.res.length?(st.res[k]?"star":"done"):k===st.i?"now":""}"></span>`).join("")}
 function msg(t,k){$("fb").textContent=t;$("fb").className="fb "+(k||"")}
 function shake(el){el.classList.remove("shake");void el.offsetWidth;el.classList.add("shake")}
-function show(id){["menu","play","end"].forEach(s=>$(s).hidden=s!==id);window.scrollTo(0,0)}
-function start(g){st={game:g,i:0,n:g==="one"?N_ONE:N_TAB,res:[],stars:0};$("ex2").checked=cfg.explain;show("play");load()}
+function show(id){["menu","play","end"].forEach(s=>$(s).hidden=s!==id);document.body.classList.toggle("playing",id==="play");window.scrollTo(0,0)}
+function start(g){st={game:g,i:0,n:g==="tab"?N_TAB:N_ONE,res:[],stars:0,dist:g==="exp"||(g==="one"&&cfg.dist)};$("ex2").checked=cfg.explain;$("di2").checked=cfg.dist;$("ex2").parentNode.hidden=g==="exp";$("di2").parentNode.hidden=g!=="one";show("play");load()}
 const INP='type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" autocorrect="off" spellcheck="false"';
 function load(){
-  const t=st.t=newTask();st.ex=cfg.explain;st.tries=0;st.done=false;
+  const t=st.t=newTask();st.ex=st.game==="exp"?false:cfg.explain;st.tries=0;st.done=false;
   ["chk","tip","sol","nxt"].forEach(b=>$(b).hidden=true);
   $("pf").innerHTML=icon(t.pet.k);
   $("nl").innerHTML=t.type==="one"?svgOne(t,st.ex):svgTab(t,st.ex);
@@ -233,11 +263,13 @@ function load(){
   }
 }
 const nm=l=>l==="Z"?["NZT","Nachbarzehntausender"]:["NHT","Nachbarhunderttausender"];
-const taskOne=t=>`${t.pet.n} steht auf <b>${f(t.n)}</b>. Finde die beiden ${nm(t.lvl)[0]}.`;
-const explainOne=t=>`${f(t.n)} liegt zwischen zwei Strichen. Das sind die Nachbarn: ${f(t.lo)} und ${f(t.hi)}.`;
+const taskOne=t=>`${t.pet.n} steht auf <b>${f(t.n)}</b>. Finde die beiden ${nm(t.lvl)[0]}${st.dist?" und rechne vor und zurück":""}.`;
+const explainOne=t=>`${f(t.n)} liegt zwischen den Nachbarn ${f(t.lo)} und ${f(t.hi)}.`;
 function buildOne(t){
-  const [ab]=nm(t.lvl),c=t.lvl==="Z"?"z":"h",v=st.ex;
-  $("ans").innerHTML=`<div class="ans"><div class="col"><label class="${c}">${ab} davor (kleiner)</label><input class="num ${c}${v?" ok":""}" id="lo" ${INP} aria-label="${ab} davor" ${v?`value="${f(t.lo)}" readonly`:""}></div><div class="lt">&lt;</div><div class="mid">${icon(t.pet.k)}${f(t.n)}</div><div class="lt">&lt;</div><div class="col"><label class="${c}">${ab} danach (größer)</label><input class="num ${c}${v?" ok":""}" id="hi" ${INP} aria-label="${ab} danach" ${v?`value="${f(t.hi)}" readonly`:""}></div></div>`;
+  const [ab]=nm(t.lvl),c=t.lvl==="Z"?"z":"h",v=st.ex,d=st.dist;
+  const inp=(id,val,cl,lab)=>`<input class="num ${cl}${v?" ok":""}" id="${id}" ${INP} aria-label="${lab}" ${v?`value="${f(val)}" readonly`:""}>`;
+  const dist=(id,val,lab,sg)=>d?`<span class="dl">${lab}</span><div class="jp">${sg}${inp(id,val,"sm",lab)}</div>`:"";
+  $("ans").innerHTML=`<div class="ans"><div class="col d">${dist("dlo",t.n-t.lo,"Rechne zurück","−")}<label class="${c}">${ab} davor</label>${inp("lo",t.lo,c,ab+" davor")}</div><div class="lt">&lt;</div><div class="mid">${icon(t.pet.k)}${f(t.n)}</div><div class="lt">&lt;</div><div class="col d">${dist("dhi",t.hi-t.n,"Rechne vor","+")}<label class="${c}">${ab} danach</label>${inp("hi",t.hi,c,ab+" danach")}</div></div>`;
 }
 const KEYS={Z:["z0","z1"],H:["h0","h1"],M:["h0","z0","z1","h1"]};
 function buildTab(t){
@@ -256,12 +288,14 @@ function wrongFb(text){st.tries++;msg(text,"nope");shake($("ans"));if(st.tries>=
 function chk(){
   if(st.done||st.ex)return;const t=st.t;
   if(t.type==="one"){
-    const lo=parse($("lo").value),hi=parse($("hi").value);
-    if(lo===null||hi===null){msg("Trage beide Nachbarn ein.");return}
-    const a=lo===t.lo,b=hi===t.hi;
+    const lo=parse($("lo").value),hi=parse($("hi").value),dl=st.dist?parse($("dlo").value):0,dh=st.dist?parse($("dhi").value):0;
+    if(lo===null||hi===null||dl===null||dh===null){msg(st.dist?"Fülle alle Felder aus.":"Trage beide Nachbarn ein.");return}
+    const a=lo===t.lo,b=hi===t.hi,x=!st.dist||dl===t.n-t.lo,y=!st.dist||dh===t.hi-t.n;
     $("lo").classList.toggle("bad",!a);$("hi").classList.toggle("bad",!b);
-    if(a&&b){$("lo").className=$("hi").className="num ok";$("lo").readOnly=$("hi").readOnly=true;
+    if(st.dist){$("dlo").classList.toggle("bad",!x);$("dhi").classList.toggle("bad",!y)}
+    if(a&&b&&x&&y){["lo","hi","dlo","dhi"].forEach(i=>{const e=$(i);if(e){e.classList.remove("bad");e.classList.add("ok");e.readOnly=true}});
       return done(st.tries===0,"Richtig!")}
+    if(a&&b)return wrongFb("Die Nachbarn stimmen. Prüfe, wie weit du vor und zurück rechnest.");
     wrongFb(lo>hi?"Die kleinere Zahl gehört nach links.":a?"Der kleinere Nachbar stimmt. Prüfe den größeren.":b?"Der größere Nachbar stimmt. Prüfe den kleineren.":"Noch nicht. Zwischen welchen Strichen steht die Zahl?");
     return;
   }
@@ -275,12 +309,11 @@ function chk(){
 function tip(){
   const t=st.t;
   if(t.type==="tab"){msg("Tipp: Dicke Striche sind Hunderttausender, dünne sind Zehntausender.");return}
-  const k=Math.floor((t.n-t.a)/(t.lvl==="Z"?10000:100000)),s=t.lvl==="Z"?10000:100000;
-  msg(`Tipp: Ein Schritt ist ${f(s)}. Starte bei ${f(t.a)} und zähle ${k} Schritte.`);
+  msg(st.dist?`Tipp: Rechne zurück: ${f(t.n)} − kleinerer Nachbar. Rechne vor: größerer Nachbar − ${f(t.n)}.`:`Tipp: Schau auf die ${t.lvl==="Z"?"Zehntausender":"Hunderttausender"}stelle. Der kleinere Nachbar hat danach nur Nullen.`);
 }
 function solve(){
   if(st.done)return;const t=st.t;
-  if(t.type==="one"){$("lo").value=f(t.lo);$("hi").value=f(t.hi);$("lo").className=$("hi").className="num ok";$("lo").readOnly=$("hi").readOnly=true;done(false,`Lösung: ${f(t.lo)} und ${f(t.hi)} (${nm(t.lvl)[0]}).`)}
+  if(t.type==="one"){[["lo",t.lo],["hi",t.hi],["dlo",t.n-t.lo],["dhi",t.hi-t.n]].forEach(([i,v])=>{const e=$(i);if(e){e.value=f(v);e.className=e.className.replace(" bad","").replace(" ok","")+" ok";e.readOnly=true}});done(false,`Lösung: ${f(t.lo)} und ${f(t.hi)}`+(st.dist?`, zurück ${f(t.n-t.lo)}, vor ${f(t.hi-t.n)}`:"")+".")}
   else{t.nums.forEach((x,i)=>KEYS[t.cols].forEach(k=>{const e=$("t"+i+k);e.value=f(x[k]);e.className=e.className.replace(" bad","")+" ok";e.readOnly=true}));done(false,"Lösung: So sieht die Tabelle aus.")}
 }
 $("chk").onclick=chk;$("tip").onclick=tip;$("sol").onclick=solve;
@@ -299,6 +332,11 @@ $("ans").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();c
 /* Menü */
 document.querySelectorAll("#segKind button").forEach(b=>b.onclick=()=>{cfg.kind=b.dataset.k;document.querySelectorAll("#segKind button").forEach(x=>x.setAttribute("aria-pressed",x===b))});
 $("ex1").onchange=()=>{cfg.explain=$("ex1").checked};
+$("di2").onchange=()=>{cfg.dist=$("di2").checked;if(st.game!=="one")return;st.dist=cfg.dist;
+  if(!st.t||st.t.type!=="one")return;
+  $("nl").innerHTML=svgOne(st.t,st.ex);
+  if(st.done)return;
+  buildOne(st.t);if(!st.ex)$("q").innerHTML=taskOne(st.t)};
 $("ex2").onchange=()=>{cfg.explain=$("ex2").checked;$("ex1").checked=cfg.explain;st.i=0;st.res=[];st.stars=0;load()};
 document.querySelectorAll(".mode").forEach(b=>b.onclick=()=>start(b.dataset.g));
 $("back").onclick=$("home").onclick=()=>{$("ex1").checked=cfg.explain;show("menu")};
