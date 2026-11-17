@@ -81,6 +81,7 @@ header p{margin:.15rem 0 0;font-size:1.15rem}
 .lt{font-size:2rem;font-weight:800}
 .num{font:inherit;font-size:1.8rem;width:11.5rem;height:3.6rem;padding:0 .8rem;border:3px solid var(--ink);border-radius:1rem;background:#fff;color:var(--ink);text-align:center}
 .num.z{border-color:var(--z)}.num.h{border-color:var(--h)}
+.num.c0{border-color:#6a4fd1}.num.c1{border-color:#1b3a8c}.num.c2{border-color:#e8760c}.num.c3{border-color:#2e7d32}
 .num.ok{background:var(--okbg);border-color:var(--ok);color:var(--ok);font-weight:800}
 .num.bad{background:var(--badbg);border-color:var(--bad)}
 .tb{display:grid;gap:.55rem;align-items:center;margin-bottom:.9rem}
@@ -89,6 +90,16 @@ header p{margin:.15rem 0 0;font-size:1.15rem}
 .tb .rn{width:2.6rem;height:2.6rem;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;justify-self:center}
 .tb .zahl{font-size:1.6rem;font-weight:800;text-align:center;background:#fff;border:3px solid var(--ink);border-radius:1rem;padding:.35rem .4rem}
 .tb .num{width:100%;font-size:1.5rem;height:3.2rem}
+.tb .ty{padding:.1rem .4rem;border:2px solid;border-radius:.9rem;text-align:center;line-height:1.1;font-weight:800;font-size:1.15rem}
+.tb .ty small{display:block;font-weight:600;font-size:.78rem}
+.tb .ty.c0{border-color:#6a4fd1;background:#e6e0fa}.tb .ty.c1{border-color:#1b3a8c;background:#d5def7}.tb .ty.c2{border-color:#e8760c;background:#fde3c7}.tb .ty.c3{border-color:#2e7d32;background:#d6f0d0}
+.tb .rn.sel,.tb .zahl.sel{box-shadow:0 0 0 .25rem var(--sun)}
+.tb [data-r]{cursor:pointer}
+.tb.rep{gap:.35rem .5rem}
+.tb.rep .rn{width:2.2rem;height:2.2rem;background:var(--ink)}
+.tb.rep .num{height:2.6rem;font-size:1.3rem}
+.tb.rep .zahl{font-size:1.35rem;padding:.2rem .3rem}
+.tb.rep .hd{font-size:1rem;padding:0 .4rem}
 .say{display:flex;gap:.9rem;align-items:center;margin:.3rem 0 1rem}
 .pf{flex:none;width:4.8rem}
 .pf svg{width:4.8rem;display:block}
@@ -129,6 +140,7 @@ header p{margin:.15rem 0 0;font-size:1.15rem}
   <div class="modes">
     <button class="mode" data-g="one"><i>📏</i><div><b>Eine Zahl am Zahlenstrahl</b><span>Finde die beiden Nachbarn.</span></div></button>
     <button class="mode" data-g="tab"><i>📋</i><div><b>Tabelle mit mehreren Zahlen</b><span>Trage die Nachbarn in die Tabelle ein.</span></div></button>
+    <button class="mode" data-g="rep"><i>🔁</i><div><b>Wiederholung</b><span>Alles gemischt: NT, NH, NZ, Vorgänger, Nachfolger.</span></div></button>
     <button class="mode" data-g="exp"><i>🏆</i><div><b>Experte</b><span>Nachbarn finden, vor und zurück rechnen.</span></div></button>
   </div>
 </section>
@@ -187,8 +199,23 @@ function numFor(lvl){ // Nachbarn und Zahl; Zahl liegt weit genug von beiden Nac
   const st_=lvl==="Z"?10000:100000,lo=lvl==="Z"?rnd(10,99)*10000:rnd(1,9)*100000,r=rnd(st_/400,st_*3/400)*100;
   return {lo:lo,hi:lo+st_,n:lo+r};
 }
+const RT=[{k:"NT",u:1000,name:"Nachbartausender",c:0,col:"#6a4fd1"},{k:"NH",u:100,name:"Nachbarhunderter",c:1,col:"#1b3a8c"},{k:"NZ",u:10,name:"Nachbarzehner",c:2,col:"#e8760c"},{k:"V · N",u:1,name:"Vorgänger · Nachfolger",c:3,col:"#2e7d32",vn:true}];
+const mag=()=>one([rnd(1,9),rnd(10,99),rnd(100,999)]);
+function repRow(T){
+  let n;
+  if(T.u===1000)n=mag()*1000+rnd(25,75)*10;
+  else if(T.u===100)n=mag()*1000+rnd(0,9)*100+rnd(25,75);
+  else if(T.u===10)n=one([rnd(1,9),rnd(10,99),rnd(100,999),rnd(1000,9999)])*100+rnd(0,9)*10+rnd(3,7);
+  else n=one([rnd(1,9),rnd(10,99),rnd(100,999),rnd(1000,9999),rnd(10000,99999)])*10+rnd(1,8);
+  const u=T.u,a=Math.floor(n/(10*u))*10*u,lo=T.vn?n-1:Math.floor(n/u)*u;
+  return {T:T,u:u,vn:!!T.vn,n:n,lo:lo,hi:T.vn?n+1:lo+u,a:a,b:a+10*u};
+}
 function newTask(){
   const pet=one([{k:"dog",n:"Max"},{k:"frog",n:"Mini"}]);
+  if(st.game==="rep"){
+    const ts=RT.slice();for(let i=ts.length-1;i>0;i--){const j=rnd(0,i);[ts[i],ts[j]]=[ts[j],ts[i]]}
+    return {type:"rep",pet:pet,rows:ts.map(repRow)};
+  }
   if(st.game!=="tab"){
     const lvl=cfg.kind==="M"?one(["Z","H"]):cfg.kind,x=numFor(lvl);
     const a=lvl==="Z"?Math.floor(x.lo/100000)*100000:0;
@@ -220,6 +247,20 @@ function svgOne(t,ex){
   s+=`<g id="pet"><line x1="${xn}" x2="${xn}" y1="82" y2="${Y-22}" stroke="#1d3557" stroke-width="3" stroke-dasharray="6 6" opacity=".6"/><g transform="translate(${xn} 52) scale(.8)">${shape(t.pet.k)}</g><circle cx="${xn}" cy="${Y}" r="9" fill="${t.pet.k==="dog"?"#e8903a":"#43a047"}" stroke="#fff" stroke-width="3"/><rect x="${xn-62}" y="0" width="124" height="28" rx="14" fill="#fff" stroke="#1d3557" stroke-width="2.5"/><text x="${xn}" y="21" text-anchor="middle" font-size="20" font-weight="800" fill="#1d3557">${f(t.n)}</text></g>`;
   return s+"</svg>";
 }
+function svgRep(r,pet,ex){
+  const a=r.a,b=r.b,u=r.u,Y=170,X=v=>110+780*(v-a)/(b-a),col=r.T.col,xn=X(r.n),xl=X(r.lo),xh=X(r.hi),tl=r.vn?"V":r.T.k,th=r.vn?"N":r.T.k;
+  let s=`<svg viewBox="0 0 1000 330" role="img" aria-label="Zahlenstrahl"><rect x="0" y="${Y+28}" width="1000" height="${330-Y-28}" rx="18" fill="#d9f0c7"/>`+axis(Y);
+  if(ex)s+=`<line x1="${xl}" y1="${Y}" x2="${xh}" y2="${Y}" stroke="${col}" stroke-width="12" stroke-linecap="round" opacity=".55"/>`;
+  for(let i=0;i<=10;i++){const h=i===0||i===10?34:i===5?26:16;
+    s+=`<line class="tk" x1="${X(a+i*u)}" x2="${X(a+i*u)}" y1="${Y-h}" y2="${Y+h}" stroke="#1d3557" stroke-width="${h>20?6:4}" stroke-linecap="round"/>`}
+  const lab=(v,y,c,tg)=>`<text x="${X(v)}" y="${y}" text-anchor="middle" font-size="23" font-weight="700" fill="${c}">${f(v)}</text>`+(tg?`<text x="${X(v)}" y="${y+25}" text-anchor="middle" font-size="20" font-weight="800" fill="${c}">${tg}</text>`:"");
+  if(ex){
+    s+=lab(r.lo,Y+58,col,tl)+`<line x1="${xh}" x2="${xh}" y1="${Y+18}" y2="${Y+94}" stroke="${col}" stroke-width="3" stroke-dasharray="5 5"/>`+lab(r.hi,Y+118,col,th);
+    [r.lo,r.hi].forEach(v=>{s+=`<circle cx="${X(v)}" cy="${Y}" r="12" fill="${col}" stroke="#fff" stroke-width="3"/>`});
+  }else[a,a+5*u,b].forEach(v=>{s+=lab(v,Y+58,"#1d3557","")});
+  s+=`<g id="pet"><line x1="${xn}" x2="${xn}" y1="82" y2="${Y-22}" stroke="#1d3557" stroke-width="3" stroke-dasharray="6 6" opacity=".6"/><g transform="translate(${xn} 52) scale(.8)">${shape(pet.k)}</g><circle cx="${xn}" cy="${Y}" r="9" fill="${pet.k==="dog"?"#e8903a":"#43a047"}" stroke="#fff" stroke-width="3"/><rect x="${xn-62}" y="0" width="124" height="28" rx="14" fill="#fff" stroke="#1d3557" stroke-width="2.5"/><text x="${xn}" y="21" text-anchor="middle" font-size="20" font-weight="800" fill="#1d3557">${f(r.n)}</text></g>`;
+  return s+"</svg>";
+}
 function svgTab(t,ex){
   const a=t.a,b=t.b,N=(b-a)/10000,Y=206,X=v=>90+820*(v-a)/(b-a);
   let s=`<svg viewBox="0 0 1000 300" role="img" aria-label="Zahlenstrahl"><rect x="0" y="236" width="1000" height="64" rx="18" fill="#d9f0c7"/>`+axis(Y);
@@ -243,21 +284,22 @@ function leaves(){$("dots").innerHTML=st.ex?"":Array.from({length:st.n},(_,k)=>`
 function msg(t,k){$("fb").textContent=t;$("fb").className="fb "+(k||"")}
 function shake(el){el.classList.remove("shake");void el.offsetWidth;el.classList.add("shake")}
 function show(id){["menu","play","end"].forEach(s=>$(s).hidden=s!==id);document.body.classList.toggle("playing",id==="play");window.scrollTo(0,0)}
-function start(g){st={game:g,i:0,n:g==="tab"?N_TAB:N_ONE,res:[],stars:0,dist:g==="exp"||(g==="one"&&cfg.dist)};$("ex2").checked=cfg.explain;$("di2").checked=cfg.dist;$("ex2").parentNode.hidden=g==="exp";$("di2").parentNode.hidden=g!=="one";show("play");load()}
+function start(g){st={game:g,i:0,n:g==="tab"||g==="rep"?N_TAB:N_ONE,res:[],stars:0,dist:g==="exp"||(g==="one"&&cfg.dist)};$("ex2").checked=cfg.explain;$("di2").checked=cfg.dist;$("ex2").parentNode.hidden=g==="exp";$("di2").parentNode.hidden=g!=="one";document.querySelector("#play .leg").hidden=g==="rep";show("play");load()}
 const INP='type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" autocorrect="off" spellcheck="false"';
 function load(){
   const t=st.t=newTask();st.ex=st.game==="exp"?false:cfg.explain;st.tries=0;st.done=false;
   ["chk","tip","sol","nxt"].forEach(b=>$(b).hidden=true);
   $("pf").innerHTML=icon(t.pet.k);
-  $("nl").innerHTML=t.type==="one"?svgOne(t,st.ex):svgTab(t,st.ex);
-  t.type==="one"?buildOne(t):buildTab(t);
+  st.sel=0;
+  $("nl").innerHTML=t.type==="one"?svgOne(t,st.ex):t.type==="rep"?svgRep(t.rows[0],t.pet,st.ex):svgTab(t,st.ex);
+  t.type==="one"?buildOne(t):t.type==="rep"?buildRep(t):buildTab(t);
   leaves();
   if(st.ex){
     $("q").innerHTML="So geht es:";
-    msg(t.type==="one"?explainOne(t):"Die Punkte zeigen die Nachbarn: links und rechts von jeder Zahl.");
+    msg(t.type==="one"?explainOne(t):t.type==="rep"?explainRep(t.rows[0]):"Die Punkte zeigen die Nachbarn: links und rechts von jeder Zahl.");
     $("nxt").hidden=false;$("nxt").textContent="Nächstes Beispiel ›";
   }else{
-    $("q").innerHTML=`${t.type==="one"?taskOne(t):"Trage die Nachbarn in die Tabelle ein."}`;
+    $("q").innerHTML=`${t.type==="one"?taskOne(t):t.type==="rep"?"Trage die Nachbarn ein. Tippe eine Zeile an, dann siehst du die Zahl am Zahlenstrahl.":"Trage die Nachbarn in die Tabelle ein."}`;
     msg("Schau links und rechts von der Zahl.");
     $("chk").hidden=false;$("tip").hidden=false;$("nxt").textContent=st.i===st.n-1?"Fertig ›":"Weiter ›";
   }
@@ -270,6 +312,21 @@ function buildOne(t){
   const inp=(id,val,cl,lab)=>`<input class="num ${cl}${v?" ok":""}" id="${id}" ${INP} aria-label="${lab}" ${v?`value="${f(val)}" readonly`:""}>`;
   const dist=(id,val,lab,sg)=>d?`<span class="dl">${lab}</span><div class="jp">${sg}${inp(id,val,"sm",lab)}</div>`:"";
   $("ans").innerHTML=`<div class="ans"><div class="col d">${dist("dlo",t.n-t.lo,"Rechne zurück","−")}<label class="${c}">${ab} davor</label>${inp("lo",t.lo,c,ab+" davor")}</div><div class="lt">&lt;</div><div class="mid">${icon(t.pet.k)}${f(t.n)}</div><div class="lt">&lt;</div><div class="col d">${dist("dhi",t.hi-t.n,"Rechne vor","+")}<label class="${c}">${ab} danach</label>${inp("hi",t.hi,c,ab+" danach")}</div></div>`;
+}
+const explainRep=r=>r.vn?`${f(r.n)}: Vorgänger ${f(r.lo)}, Nachfolger ${f(r.hi)}.`:`${f(r.n)} liegt zwischen den ${r.T.name}n ${f(r.lo)} und ${f(r.hi)}.`;
+function buildRep(t){
+  const v=st.ex;
+  let h=`<div class="tb rep" style="grid-template-columns:2.2rem 11rem repeat(3,1fr)"><span></span><div class="hd">Aufgabe</div><div class="hd">davor</div><div class="hd">Zahl</div><div class="hd">danach</div>`;
+  t.rows.forEach((r,i)=>{
+    const inp=(k,val)=>`<input class="num c${r.T.c}${v?" ok":""}" id="t${i}${k}" data-r="${i}" ${INP} aria-label="${r.vn?(k==="lo"?"Vorgänger":"Nachfolger"):(k==="lo"?"kleinerer":"größerer")+" "+r.T.name}, Zeile ${i+1}" ${v?`value="${f(val)}" readonly`:""}>`;
+    h+=`<div class="rn${i===st.sel?" sel":""}" data-r="${i}">${i+1}</div><div class="ty c${r.T.c}" data-r="${i}">${r.T.k}<small>${r.T.name}</small></div>${inp("lo",r.lo)}<div class="zahl${i===st.sel?" sel":""}" data-r="${i}">${f(r.n)}</div>${inp("hi",r.hi)}`});
+  $("ans").innerHTML=h+"</div>";
+}
+function selRow(i){
+  const t=st.t;if(!t||t.type!=="rep"||i===st.sel)return;
+  st.sel=i;$("nl").innerHTML=svgRep(t.rows[i],t.pet,st.ex);
+  document.querySelectorAll("#ans .rn,#ans .zahl").forEach(e=>e.classList.toggle("sel",+e.dataset.r===i));
+  if(st.ex)msg(explainRep(t.rows[i]));
 }
 const KEYS={Z:["z0","z1"],H:["h0","h1"],M:["h0","z0","z1","h1"]};
 function buildTab(t){
@@ -299,6 +356,15 @@ function chk(){
     wrongFb(lo>hi?"Die kleinere Zahl gehört nach links.":a?"Der kleinere Nachbar stimmt. Prüfe den größeren.":b?"Der größere Nachbar stimmt. Prüfe den kleineren.":"Noch nicht. Zwischen welchen Strichen steht die Zahl?");
     return;
   }
+  if(t.type==="rep"){
+    let ok=true,empty=false;
+    t.rows.forEach((r,i)=>["lo","hi"].forEach(k=>{if(parse($("t"+i+k).value)===null)empty=true}));
+    if(empty){msg("Fülle zuerst alle Felder aus.");return}
+    t.rows.forEach((r,i)=>["lo","hi"].forEach(k=>{const e=$("t"+i+k),good=parse(e.value)===r[k];
+      if(good){e.readOnly=true;e.classList.remove("bad");e.classList.add("ok")}else{ok=false;e.classList.add("bad")}}));
+    ok?done(st.tries===0,"Richtig!"):wrongFb("Die roten Felder stimmen noch nicht.");
+    return;
+  }
   let all=true,empty=false;
   t.nums.forEach((x,i)=>KEYS[t.cols].forEach(k=>{const e=$("t"+i+k);if(parse(e.value)===null)empty=true}));
   if(empty){msg("Fülle zuerst alle Felder aus.");return}
@@ -308,12 +374,14 @@ function chk(){
 }
 function tip(){
   const t=st.t;
+  if(t.type==="rep"){msg("Tipp: NT = Tausender, NH = Hunderter, NZ = Zehner. Vorgänger: eins weniger. Nachfolger: eins mehr.");return}
   if(t.type==="tab"){msg("Tipp: Dicke Striche sind Hunderttausender, dünne sind Zehntausender.");return}
   msg(st.dist?`Tipp: Rechne zurück: ${f(t.n)} − kleinerer Nachbar. Rechne vor: größerer Nachbar − ${f(t.n)}.`:`Tipp: Schau auf die ${t.lvl==="Z"?"Zehntausender":"Hunderttausender"}stelle. Der kleinere Nachbar hat danach nur Nullen.`);
 }
 function solve(){
   if(st.done)return;const t=st.t;
   if(t.type==="one"){[["lo",t.lo],["hi",t.hi],["dlo",t.n-t.lo],["dhi",t.hi-t.n]].forEach(([i,v])=>{const e=$(i);if(e){e.value=f(v);e.className=e.className.replace(" bad","").replace(" ok","")+" ok";e.readOnly=true}});done(false,`Lösung: ${f(t.lo)} und ${f(t.hi)}`+(st.dist?`, zurück ${f(t.n-t.lo)}, vor ${f(t.hi-t.n)}`:"")+".")}
+  else if(t.type==="rep"){t.rows.forEach((r,i)=>["lo","hi"].forEach(k=>{const e=$("t"+i+k);e.value=f(r[k]);e.className=e.className.replace(" bad","")+" ok";e.readOnly=true}));done(false,"Lösung: So sieht die Tabelle aus.")}
   else{t.nums.forEach((x,i)=>KEYS[t.cols].forEach(k=>{const e=$("t"+i+k);e.value=f(x[k]);e.className=e.className.replace(" bad","")+" ok";e.readOnly=true}));done(false,"Lösung: So sieht die Tabelle aus.")}
 }
 $("chk").onclick=chk;$("tip").onclick=tip;$("sol").onclick=solve;
@@ -327,6 +395,8 @@ $("nxt").onclick=()=>{
 };
 /* Eingaben: Punkte setzen, Enter prüft */
 $("ans").addEventListener("focusout",e=>{if(e.target.classList&&e.target.classList.contains("num")&&!e.target.readOnly){const v=parse(e.target.value);if(v!==null)e.target.value=f(v)}});
+$("ans").addEventListener("focusin",e=>{const r=e.target.dataset&&e.target.dataset.r;if(r!==undefined)selRow(+r)});
+$("ans").addEventListener("click",e=>{const el=e.target.closest&&e.target.closest("[data-r]");if(el)selRow(+el.dataset.r)});
 $("ans").addEventListener("input",e=>{if(e.target.classList)e.target.classList.remove("bad")});
 $("ans").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();chk()}});
 /* Menü */
